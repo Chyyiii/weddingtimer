@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Таймер мечты · Павел & Анастасия</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07050A;
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-pale: rgba(201,168,76,0.10);
+    --rose: #C8282B;
+    --text: #F5EDD8;
+    --text-dim: rgba(245,237,216,0.45);
+    --text-mid: rgba(245,237,216,0.75);
+  }
+
+  html, body {
+    width: 100%; min-height: 100vh;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star {
+    position: absolute; border-radius: 50%; background: #fff;
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.08; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.5); }
+  }
+
+  .petal { position: fixed; pointer-events: none; z-index: 0; animation: fall linear infinite; opacity: 0.25; }
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.25; }
+    90% { opacity: 0.15; }
+    100% { transform: translateY(110vh) rotate(400deg); opacity: 0; }
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 400px;
+    padding: 28px 18px 36px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+
+  /* TOP BADGE */
+  .badge {
+    width: 64px; height: 64px; margin-bottom: 18px;
+    background: var(--gold-pale);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 28px;
+    animation: glow 3s ease-in-out infinite;
+  }
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 20px rgba(201,168,76,0.1); }
+    50% { box-shadow: 0 0 50px rgba(201,168,76,0.3); }
+  }
+
+  .eyebrow {
+    font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: ''; display: block; width: 20px; height: 1px;
+    background: var(--gold); opacity: 0.5;
+  }
+
+  .names {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 600;
+    color: var(--text); line-height: 1.1; margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+  .names span { color: var(--gold); }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 10px; width: 100%;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::before, .section-label::after {
+    content: ''; flex: 1; height: 1px; background: rgba(245,237,216,0.1);
+  }
+
+  /* TIMER UP — together */
+  .timer-together {
+    width: 100%; margin-bottom: 24px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 16px 14px 14px;
+  }
+  .timer-together .tg-label {
+    font-size: 10px; color: var(--text-mid); margin-bottom: 12px;
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 14px;
+  }
+  .tg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .tg-unit { text-align: center; }
+  .tg-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; font-weight: 600; line-height: 1;
+    color: var(--text);
+    display: block;
+  }
+  .tg-unit-label {
+    font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); margin-top: 3px;
+  }
+  .tg-sep { display: flex; align-items: flex-start; padding-top: 6px; font-size: 20px; color: var(--text-dim); }
+
+  /* divider */
+  .divider {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; margin-bottom: 20px;
+  }
+  .divider-line { flex: 1; height: 1px; background: rgba(201,168,76,0.15); }
+  .divider-gem { color: var(--gold); font-size: 10px; opacity: 0.6; }
+
+  /* TIMER DOWN — dream */
+  .timer-dream {
+    width: 100%; margin-bottom: 24px;
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(200,40,43,0.05));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 14px; padding: 16px 14px 14px;
+    position: relative; overflow: hidden;
+  }
+  .timer-dream::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+  .dream-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 14px;
+    color: var(--text-mid); margin-bottom: 14px;
+  }
+  .dream-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .dream-unit { text-align: center; }
+  .dream-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px; font-weight: 600; line-height: 1;
+    color: var(--gold-light); display: block;
+    animation: dream-pulse 2s ease-in-out infinite;
+  }
+  @keyframes dream-pulse {
+    0%,100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .dream-unit-label {
+    font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); margin-top: 3px;
+  }
+  .dream-unlock {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .lock-icon { font-size: 18px; flex-shrink: 0; }
+  .lock-text {
+    font-size: 11px; color: var(--text-mid); text-align: left; line-height: 1.5;
+  }
+  .lock-text b { color: var(--gold); font-weight: 500; }
+
+  /* rotating phrase */
+  .phrase-wrap {
+    min-height: 48px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px; padding: 0 8px;
+  }
+  .phrase {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; font-style: italic; font-weight: 300;
+    color: var(--text-mid); line-height: 1.6; text-align: center;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .phrase.hidden { opacity: 0; transform: translateY(6px); }
+
+  /* milestones */
+  .ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 20px; }
+  .ms-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ms-icon { font-size: 18px; flex-shrink: 0; }
+  .ms-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 600; color: var(--text); line-height: 1;
+  }
+  .ms-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
+
+  /* seal */
+  .seal {
+    font-size: 9px; color: var(--text-dim);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .seal-dot { width: 3px; height: 3px; background: var(--gold); border-radius: 50%; opacity: 0.5; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="wrap">
+
+  <div class="badge">💍</div>
+  <div class="eyebrow">Павел и Анастасия</div>
+  <div class="names">Павел <span>&</span> Настя</div>
+
+  <!-- TIMER 1: together -->
+  <div class="section-label">сколько мы уже вместе</div>
+  <div class="timer-together">
+    <div class="tg-label">С сентября 2025 — каждый день с тобой</div>
+    <div class="tg-grid">
+      <div class="tg-unit">
+        <span class="tg-num" id="tg-days">0</span>
+        <span class="tg-unit-label">дней</span>
+      </div>
+      <div class="tg-unit">
+        <span class="tg-num" id="tg-hours">0</span>
+        <span class="tg-unit-label">часов</span>
+      </div>
+      <div class="tg-unit">
+        <span class="tg-num" id="tg-mins">0</span>
+        <span class="tg-unit-label">минут</span>
+      </div>
+      <div class="tg-unit">
+        <span class="tg-num" id="tg-secs">0</span>
+        <span class="tg-unit-label">секунд</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-gem">✦</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- TIMER 2: dream -->
+  <div class="section-label">до нашей свадьбы</div>
+  <div class="timer-dream">
+    <div class="dream-label">Этот день обязательно будет…</div>
+    <div class="dream-grid">
+      <div class="dream-unit">
+        <span class="dream-num">?</span>
+        <span class="dream-unit-label">дней</span>
+      </div>
+      <div class="dream-unit">
+        <span class="dream-num">?</span>
+        <span class="dream-unit-label">часов</span>
+      </div>
+      <div class="dream-unit">
+        <span class="dream-num">?</span>
+        <span class="dream-unit-label">минут</span>
+      </div>
+      <div class="dream-unit">
+        <span class="dream-num">?</span>
+        <span class="dream-unit-label">секунд</span>
+      </div>
+    </div>
+    <div class="dream-unlock">
+      <div class="lock-icon">🔐</div>
+      <div class="lock-text">
+        Дата разблокируется в тот момент,<br>
+        когда <b>Павел сделает предложение</b> 💍
+      </div>
+    </div>
+  </div>
+
+  <!-- phrase -->
+  <div class="phrase-wrap">
+    <div class="phrase" id="phrase">«Хочу засыпать рядом с тобой каждый день»</div>
+  </div>
+
+  <!-- milestones -->
+  <div class="section-label">наш путь</div>
+  <div class="ms-grid">
+    <div class="ms-item">
+      <div class="ms-icon">🌹</div>
+      <div>
+        <div class="ms-num" id="ms-days">0</div>
+        <div class="ms-sub">дней вместе</div>
+      </div>
+    </div>
+    <div class="ms-item">
+      <div class="ms-icon">💌</div>
+      <div>
+        <div class="ms-num" id="ms-forecasts">0</div>
+        <div class="ms-sub">прогнозов для неё</div>
+      </div>
+    </div>
+    <div class="ms-item">
+      <div class="ms-icon">🌍</div>
+      <div>
+        <div class="ms-num">∞</div>
+        <div class="ms-sub">стран впереди</div>
+      </div>
+    </div>
+    <div class="ms-item">
+      <div class="ms-icon">❤️</div>
+      <div>
+        <div class="ms-num">1</div>
+        <div class="ms-sub">она. единственная</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="seal">
+    <div class="seal-dot"></div>
+    <span>Пермь · 2025 — навсегда</span>
+    <div class="seal-dot"></div>
+  </div>
+
+</div>
+
+<script>
+const START = new Date('2025-09-01T00:00:00');
+const FORECASTS_START = new Date('2025-12-24T00:00:00');
+
+const phrases = [
+  '«Хочу засыпать рядом с тобой каждый день»',
+  '«Ты — королева. Это не комплимент, это факт»',
+  '«Хочу смеяться с тобой до слёз — над ерундой, просто так»',
+  '«Ты сидишь так глубоко в сердце, что уже не достать»',
+  '«Хочу видеть тебя своей женой — это моя главная мечта»',
+  '«Рядом с тобой даже молчание становится уютным»',
+  '«Ты — первая мысль каждого моего утра»',
+  '«Хочу открыть с тобой весь мир — каждую страну, каждый закат»',
+  '«Тащусь от тебя. Безумно и навсегда»',
+  '«Этот день обязательно будет — и ты будешь в белом»',
+];
+
+let phraseIdx = 0;
+let lastPhraseSec = -1;
+
+function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
+
+function update() {
+  const now = new Date();
+
+  // timer up
+  const diffUp = now - START;
+  const totalSecUp = Math.floor(diffUp / 1000);
+  const daysUp  = Math.floor(totalSecUp / 86400);
+  const hoursUp = Math.floor((totalSecUp % 86400) / 3600);
+  const minsUp  = Math.floor((totalSecUp % 3600) / 60);
+  const secsUp  = totalSecUp % 60;
+
+  document.getElementById('tg-days').textContent  = daysUp;
+  document.getElementById('tg-hours').textContent = pad(hoursUp);
+  document.getElementById('tg-mins').textContent  = pad(minsUp);
+  document.getElementById('tg-secs').textContent  = pad(secsUp);
+
+  // milestones
+  document.getElementById('ms-days').textContent = daysUp;
+  const forecastDays = Math.max(0, Math.floor((now - FORECASTS_START) / 86400000));
+  document.getElementById('ms-forecasts').textContent = forecastDays;
+
+  // rotate phrase every 7 sec
+  if (secsUp % 7 === 0 && secsUp !== lastPhraseSec) {
+    lastPhraseSec = secsUp;
+    const el = document.getElementById('phrase');
+    el.classList.add('hidden');
+    setTimeout(() => {
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      el.textContent = phrases[phraseIdx];
+      el.classList.remove('hidden');
+    }, 500);
+  }
+}
+
+// stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 130; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2 + 0.5;
+  s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*5}s;animation-delay:${-Math.random()*6}s;`;
+  starsEl.appendChild(s);
+}
+
+// petals
+['🌸','✨','💫','🌹'].forEach((e, i) => {
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.textContent = e;
+  p.style.cssText = `left:${15+i*20}%;animation-duration:${12+Math.random()*10}s;animation-delay:${-Math.random()*15}s;font-size:${12+Math.random()*8}px;`;
+  document.body.appendChild(p);
+});
+
+update();
+setInterval(update, 1000);
+</script>
+</body>
+</html>
